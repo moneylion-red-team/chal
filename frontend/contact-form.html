@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Subscribe to our mailing list</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        input[type=text],
+        input[type=email],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        #submitButton,
+        #loading {
+            background-color: #04AA6D;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #loading {
+            border: 1px solid #999999;
+            background-color: #cccccc;
+            color: #666666;
+        }
+
+
+        button[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Subscribe to Our Mailing List</h3>
+    <div class="container">
+        <form id="contactForm">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" name="firstName" placeholder="Your name..">
+
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" name="lastName" placeholder="Your last name..">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Your email..">
+
+            <button id="loading" type="button" class="btn btn-primary" type="button" disabled style="display: none;">
+                Loading...
+            </button>
+
+            <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+</body>
+<script>
+    const API_URL = 'https://hiring-api.red.s.moneylion.com';
+    function sendData(data) {
+        return new Promise((resolve, reject) => {
+            fetch(API_URL, {
+                method: 'post',
+                body: JSON.stringify(data)
+            }).then((response) => {
+                resolve(response);
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('submitButton').style.display = 'none';
+    }
+
+    function hideLoading() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('submitButton').style.display = 'block';
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        showLoading();
+        const data = new FormData(event.target);
+        const value = data.get('email');
+        const body = {
+            email: data.get('email'),
+            lastName: data.get('lastName'),
+            firstName: data.get('firstName')
+        };
+        sendData(body).then(res => {
+            alert('data received');
+            document.getElementById('contactForm').reset();
+        }).catch(err => {
+            alert('something wrong ...');
+            console.error('failed');
+        }).finally(() => {
+            hideLoading();
+        });
+    }
+    const form = document.querySelector('form');
+    form.addEventListener('submit', handleSubmit);
+</script>
+
+</html>
